@@ -161,3 +161,25 @@ def create():
         return jsonify(message = 'Post failed'), 500
 
     return jsonify(id = newPost.id)
+
+# updates the details of a post
+@bp.route('/posts/<id>', methods=['PUT'])
+# use id to perform the update
+def update(id):
+    data = request.get_json()
+    db = get_db
+
+    try:
+        #retrieve post and update title property
+        #SQLAlchemy requires you to query the database for the corresponding record, update object like normal object, and then recommit it
+        post = db.query(Post).filter(Post.id == id).one()
+        # post is an object created from User class so use DOT NOTATION, whereas data is a dictionary so we use BRACKET NOTATION
+        post.title = data['title']
+        db.commit()
+    except:
+        print(sys.exc_info()[0])
+
+        db.rollback()
+        return jsonify(message = 'Post not found'), 404
+
+    return '', 204
