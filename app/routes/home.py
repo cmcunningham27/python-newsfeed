@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, session, redirect
 from app.models import Post
 from app.db import get_db
 
@@ -15,7 +15,9 @@ def index():
     #renders the template with posts data
     return render_template(
         'homepage.html',
-        posts=posts
+        posts=posts,
+        # passes the loggedIn session to the template
+        loggedIn=session.get('loggedIn')
     )
 
 @bp.route('/login')
@@ -33,6 +35,8 @@ def single(id):
     return render_template(
         # send single post to the template
         'single-post.html',
-        post=post
+        post=post,
+        # passes the loggedIn session to the template
+        loggedIn=session.get('loggedIn')
         # once template is rendered and the response sent, the context for this route terminates, and the teardown function closes the database connection
     )
