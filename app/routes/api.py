@@ -42,6 +42,40 @@ def signup():
     session['user_id'] = newUser.id
     # property 2 = templates will use to conditionally render elements
     session['loggedIn'] = True
-    
+
     #sends the front end JSON notation that includes the ID of the new user
     return jsonify(id = newUser.id)
+
+@bp.route('/users/logout', methods=['POST'])
+def logout():
+    # remove session variables
+    session.clear()
+    # returns 204 status which indicates there is no content
+    return '', 204
+
+@bp.route('/users/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    db = get_db()
+
+    # check whether user's posted email address exists in database
+    try:
+        user = db.query(User).filter(User.email == data['email']).one()
+    except:
+        print(sys.exc_info()[0])
+
+        return jsonify(message = 'Incorrect credentials'), 400
+    
+    # sends data['password'] as second parameter in verify_password method in User model, returns 400 status if password doesn't match
+    if user.verify_password(data['password']) == False:
+        return jsonify(message = 'Incorrect credentials'), 400
+
+    # clears any existing session data and creates two new session properties
+    session.clear()
+    # property 1 = aids future database queries
+    session['user_id'] = user.id
+    # property 2 = templates will use to conditionally render elements
+    session['loggedIn'] = True
+
+
+    return jsonify(id = user.id)
