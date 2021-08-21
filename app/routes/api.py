@@ -167,7 +167,7 @@ def create():
 # use id to perform the update
 def update(id):
     data = request.get_json()
-    db = get_db
+    db = get_db()
 
     try:
         #retrieve post and update title property
@@ -185,7 +185,7 @@ def update(id):
     return '', 204
 
 
-@bp.route('/post/<id>', methods=['DELETE'])
+@bp.route('/posts/<id>', methods=['DELETE'])
 def delete(id):
     # connects to db
     db = get_db()
