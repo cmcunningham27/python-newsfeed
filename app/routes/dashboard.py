@@ -1,10 +1,14 @@
 from flask import Blueprint, render_template, session
 from app.models import Post
 from app.db import get_db
+# imports decorator login_required
+from app.utils.auth import login_required
 
 bp = Blueprint('dashboard', __name__, url_prefix='/dashboard')
 
 @bp.route('/')
+# decorators must go between the route() and the function
+@login_required
 def dash():
     # connects to db
     db = get_db()
@@ -24,6 +28,7 @@ def dash():
     )
 
 @bp.route('/edit/<id>')
+@login_required
 def edit(id):
     # get single post by id
     db = get_db()
