@@ -6,6 +6,7 @@ from app.db import get_db
 # defines the endpoints for the app
 bp = Blueprint('api', __name__, url_prefix='/api')
 
+
 # receives data
 @bp.route('/users', methods=['POST'])
 def signup():
@@ -47,12 +48,14 @@ def signup():
     #sends the front end JSON notation that includes the ID of the new user
     return jsonify(id = newUser.id)
 
+
 @bp.route('/users/logout', methods=['POST'])
 def logout():
     # remove session variables
     session.clear()
     # returns 204 status which indicates there is no content
     return '', 204
+
 
 @bp.route('/users/login', methods=['POST'])
 def login():
@@ -81,6 +84,7 @@ def login():
 
 
     return jsonify(id = user.id)
+
 
 @bp.route('/comments', methods=['POST'])
 def comment():
@@ -111,6 +115,7 @@ def comment():
     # comment creation succeeded so return newly created ID
     return jsonify(id = newComment.id)
 
+
 @bp.route('/posts/upvote', methods=['PUT'])
 def upvote():
     data = request.get_json()
@@ -132,3 +137,27 @@ def upvote():
         return jsonify(message = 'Upvote failed'), 500
 
     return '', 204
+
+
+@bp.route('/posts', methods=['POST'])
+def create():
+    data = request.get_json()
+    db = get_db()
+
+    try:
+        # create a new post
+        newPost = Post(
+            title = data['title'],
+            post_url = data['post_url'],
+            user_id = session.get('user_id')
+        )
+
+        db.add(newPost)
+        db.commit()
+    except:
+        print(sys.exc_info()[0])
+
+        db.rollback()
+        return jsonify(message = 'Post failed'), 500
+
+    return jsonify(id = newPost.id)
