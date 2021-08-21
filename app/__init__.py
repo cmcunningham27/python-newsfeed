@@ -1,5 +1,5 @@
 from flask import Flask
-from app.routes import home, dashboard
+from app.routes import home, dashboard, api
 from app.db import init_db
 # imports filters to be used
 from app.utils import filters
@@ -8,6 +8,7 @@ def create_app(test_config=None):
     # set up app config
     app = Flask(__name__, static_url_path='/')
     app.url_map.strict_slashes = False
+    # defines a key for session that is created
     app.config.from_mapping(
         SECRET_KEY='super_secret_key'
     )
@@ -19,6 +20,7 @@ def create_app(test_config=None):
     #register routes
     app.register_blueprint(home)
     app.register_blueprint(dashboard)
+    app.register_blueprint(api)
 
     init_db(app)
 
