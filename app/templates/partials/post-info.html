@@ -9,6 +9,6 @@
     {{post.vote_count}} {{post.vote_count|format_plural('point')}} by {{post.user.username}} on {{post.created_at|format_date}}
     |
     <!-- post.comments|length is how Jinja prints the length of the array, the filter starts at the second pipe character -->
-    <a href="/post/{{post.id}}">{{post.comments|length}} {{post.comments|length|format_plural('comment)}}</a>
+    <a href="/post/{{post.id}}">{{post.comments|length}} {{post.comments|length|format_plural('comment')}}</a>
   </div>
 </article>
