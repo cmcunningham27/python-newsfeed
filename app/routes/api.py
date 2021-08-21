@@ -1,6 +1,6 @@
 import sys
 from flask import Blueprint, request, jsonify, session
-from app.models import User
+from app.models import User, Post, Comment, Vote
 from app.db import get_db
 
 # defines the endpoints for the app
@@ -12,6 +12,7 @@ def signup():
     # captures the data like console.log in Node.js and Express.js
     data = request.get_json()
     print(data)
+    # connects to database
     db = get_db()
 
     # try... except handles any errors
@@ -55,6 +56,7 @@ def logout():
 
 @bp.route('/users/login', methods=['POST'])
 def login():
+    # connects to database
     data = request.get_json()
     db = get_db()
 
@@ -79,3 +81,32 @@ def login():
 
 
     return jsonify(id = user.id)
+
+@bp.route('/comments', methods=['POST'])
+def comment():
+    # connects to database
+    data = request.get_json()
+    db = get_db()
+
+    try:
+        # create a new comment
+        newComment = Comment(
+            # come from the front end thats why we use 'data'
+            comment_text = data['comment_text'],
+            post_id = data['post_id'],
+            # comes from the session which stores the user_id value, thats why we use session.get()
+            user_id = session.get('user_id')
+        )
+
+        db.add(newComment)
+        # performs the INSERT above against the database
+        db.commit()
+    except:
+        print(sys.exc_info()[0])
+
+        # rollback() discards the pending commit if it fails
+        db.rollback()
+        return jsonify(message = 'Comment failed'), 500
+
+    # comment creation succeeded so return newly created ID
+    return jsonify(id = newComment.id)
