@@ -1,11 +1,14 @@
 <article class="post">
   <div class="title">
     <a href="{{post.post_url}}" target="_blank">{{post.title}}</a>
-    <span>({{post.post_url}})</span>
+    <!-- format_url utilizes the filter to format the url by passing in the post.post_url to the function -->
+    <span>({{post.post_url|format_url}})</span>
   </div>
   <div class="meta">
-    {{post.vote_count}} point(s) by {{post.user.username}} on {{post.created_at}}
+    <!-- first post.vote_count prints number as is, second one uses format_plural filter followed by a second argument 'point' to return point or points -->
+    {{post.vote_count}} {{post.vote_count|format_plural('point')}} by {{post.user.username}} on {{post.created_at|format_date}}
     |
-    <a href="/post/{{post.id}}">{{post.comments|length}} comment(s)</a>
+    <!-- post.comments|length is how Jinja prints the length of the array, the filter starts at the second pipe character -->
+    <a href="/post/{{post.id}}">{{post.comments|length}} {{post.comments|length|format_plural('comment)}}</a>
   </div>
 </article>
